@@ -4,6 +4,7 @@
 *.log
 .vscode/
 .idea/
+.runall.pids
 
 # --- Python (FastAPI) ---
 __pycache__/
