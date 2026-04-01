@@ -9,8 +9,8 @@ const profile = (await fetchContactProfile()) ?? CONTACT_PROFILE_FALLBACK;
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a href="/" class="logo" style="text-decoration: none; color: inherit; font-weight: bold; font-size: 1.8rem;">
-          <span style="font-family: var(--font-primary);">CYBER<span style="color: var(--accent-primary);">FYX</span></span>
+        <a href="/" class="logo" style="text-decoration: none; display: flex; align-items: center;">
+          <img src="/logo.png" alt="Cyberfyx Logo" style="height: 50px; width: auto;">
         </a>
         <p>Globally trusted leader in cybersecurity and smart IT management.</p>
         {profile.office_regions.length > 0 && (
@@ -72,7 +72,7 @@ const profile = (await fetchContactProfile()) ?? CONTACT_PROFILE_FALLBACK;
 </footer>
 
 <!-- Back to Top Button -->
-<a href="#" id="back-to-top" class="back-to-top" aria-label="Back to Top">
+<a href="#top" id="back-to-top" class="back-to-top" aria-label="Back to Top">
   <i class="fa-solid fa-arrow-up"></i>
 </a>
 

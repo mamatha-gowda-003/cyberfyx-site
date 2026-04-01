@@ -36,8 +36,7 @@ const {
 
     <script is:inline>
       (function(){
-        const t = localStorage.getItem('cyberfyx-theme') ||
-          (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        const t = localStorage.getItem('cyberfyx-theme') || 'light';
         if (t === 'dark') document.documentElement.setAttribute('data-theme','dark');
       })();
     </script>
@@ -54,6 +53,9 @@ const {
     <script>
       import '../scripts/nav.ts';
       import '../scripts/animations.ts';
+      import '../scripts/search.ts';
+      import '../scripts/hero-grid.ts';
+      import '../scripts/counter.ts';
     </script>
   </body>
 </html>

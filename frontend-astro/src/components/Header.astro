@@ -11,8 +11,8 @@ const isActive = (path: string) => {
 
 <header id="header" class="site-header">
   <div class="container nav-container">
-      <a href="/" class="logo" style="text-decoration: none; color: inherit; font-weight: bold; font-size: 1.5rem;">
-          <span style="font-family: var(--font-primary);">CYBER<span style="color: var(--logo-text-accent);">FYX</span></span>
+      <a href="/" class="logo" style="text-decoration: none; display: flex; align-items: center;">
+          <img src="/logo.png" alt="Cyberfyx Logo" style="height: 40px; width: auto;">
       </a>
 
       <nav id="nav-menu" class="nav-menu">
@@ -21,7 +21,6 @@ const isActive = (path: string) => {
           <div class="nav-item has-dropdown">
               <a href="/services" class={`nav-link ${isActive('services')}`}>Services <i class="fa-solid fa-chevron-down" style="font-size: 0.7em; margin-left: 3px; transition: transform 0.2s;"></i></a>
               <div class="dropdown-menu">
-                  <a href="/services" class="dropdown-item">All Services</a>
                   <a href="/services/cybersecurity" class="dropdown-item">Cybersecurity</a>
                   <a href="/services/it-security" class="dropdown-item">IT Security</a>
                   <a href="/services/endpoint-management" class="dropdown-item">Endpoint Management</a>
