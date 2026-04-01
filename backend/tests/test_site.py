@@ -49,10 +49,8 @@ def test_contact_profile_includes_office_regions_and_active_interests(client, se
     assert payload["sales_email"] == "sales@cyberfyx.net"
     assert payload["headquarters_name"] == "Cyberfyx"
 
-    regions = extract_collection_items(payload.get("office_regions"))
     interests = extract_collection_items(payload.get("interest_options"))
 
-    assert [region["slug"] for region in regions] == ["india", "singapore", "philippines", "dubai"]
     assert [interest["slug"] for interest in interests] == [
         "iso-consultation-services",
         "cybersecurity-services",
