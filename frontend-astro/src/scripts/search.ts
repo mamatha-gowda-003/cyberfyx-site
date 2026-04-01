@@ -14,65 +14,144 @@ async function initSearchIndex(apiBaseUrl: string) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const searchTrigger = document.getElementById('search-trigger');
+  initSiteSearch();
 
-  if (!searchTrigger) return;
-
-  // Resolve API base from meta tag and pre-fetch the search index
   const metaTag = document.querySelector('meta[name="cyberfyx-api-base"]');
   const apiBaseUrl = metaTag ? (metaTag.getAttribute('content') ?? '') : '';
   initSearchIndex(apiBaseUrl);
+});
 
-  const dialogContent = `
-    <div id="search-dialog" style="display:none; position:fixed; top:80px; left:50%; transform:translateX(-50%); width: 90%; max-width: 600px; background:var(--bg-secondary); border: 1px solid var(--border-glass); border-radius: 12px; z-index:9999; padding: 1.5rem; box-shadow: var(--shadow-hover);">
-       <input type="text" id="search-input" placeholder="Search Cyberfyx..." style="width:100%; padding:0.8rem; border:1px solid var(--border-glass); border-radius:8px; font-size:1rem;" />
-       <div id="search-results" style="margin-top: 1rem; max-height: 300px; overflow-y:auto; display:flex; flex-direction:column; gap:0.5rem;"></div>
-       <button id="close-search" class="btn btn-outline mt-1 w-full" style="padding:0.5rem;">Close</button>
+function initSiteSearch() {
+  const navActions = document.querySelector('.nav-actions');
+  if (!navActions) return;
+
+  // Find the quote button to insert before it
+  const quoteButton = navActions?.querySelector('[href="/contact"]');
+  if (!quoteButton) return;
+
+  const searchWrapper = document.createElement('div');
+  searchWrapper.className = 'site-search';
+
+  const searchButton = document.createElement('button');
+  searchButton.type = 'button';
+  searchButton.className = 'site-search-btn';
+  searchButton.setAttribute('aria-label', 'Search website');
+  searchButton.setAttribute('aria-expanded', 'false');
+  searchButton.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
+  searchWrapper.appendChild(searchButton);
+
+  const dropdown = document.createElement('div');
+  dropdown.className = 'site-search-dropdown';
+  dropdown.innerHTML = `
+    <div class="site-search-bar">
+      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      <input class="site-search-input" type="search" placeholder="Search services, industries, careers, contact..." autocomplete="off">
+      <button class="site-search-close" type="button" aria-label="Close search">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
+    <div class="site-search-results"></div>
   `;
-  document.body.insertAdjacentHTML('beforeend', dialogContent);
+  searchWrapper.appendChild(dropdown);
+  navActions.insertBefore(searchWrapper, quoteButton);
 
-  const searchDialog = document.getElementById('search-dialog') as HTMLDivElement;
-  const searchInput = document.getElementById('search-input') as HTMLInputElement;
-  const resultsDiv = document.getElementById('search-results') as HTMLDivElement;
-  const closeBtn = document.getElementById('close-search') as HTMLButtonElement;
+  const input = dropdown.querySelector('.site-search-input') as HTMLInputElement;
+  const results = dropdown.querySelector('.site-search-results') as HTMLDivElement;
+  const closeButton = dropdown.querySelector('.site-search-close') as HTMLButtonElement;
+  const pageEntries = getSearchEntries();
 
-  searchTrigger.addEventListener('click', () => {
-    searchDialog.style.display = searchDialog.style.display === 'none' ? 'block' : 'none';
-    searchInput.focus();
-  });
+  function renderResults(query = '') {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) {
+      results.innerHTML = '<div class="site-search-empty">Start typing to search the website.</div>';
+      return;
+    }
 
-  closeBtn.addEventListener('click', () => {
-    searchDialog.style.display = 'none';
-    searchInput.value = '';
-    resultsDiv.innerHTML = '';
-  });
+    const queryTokens = normalizedQuery.split(/\s+/).filter(Boolean);
+    const matches = pageEntries
+      .filter(entry => queryTokens.every(token => entry.searchText.includes(token)))
+      .slice(0, 10);
 
-  searchInput.addEventListener('input', (e) => {
-    const query = (e.target as HTMLInputElement).value.toLowerCase();
-    resultsDiv.innerHTML = '';
+    if (!matches.length) {
+      results.innerHTML = '<div class="site-search-empty">No matching pages found. Try keywords like cybersecurity, contact, services, or industries.</div>';
+      return;
+    }
 
-    if (query.length < 2) return;
+    results.innerHTML = matches.map(entry => `
+      <a class="site-search-result" href="${entry.href}">
+        <strong>${entry.title}</strong>
+        <small>${entry.section}</small>
+      </a>
+    `).join('');
+  }
 
-    const matches = resolvedIndex.filter(entry =>
-      entry.title.toLowerCase().includes(query) ||
-      entry.excerpt.toLowerCase().includes(query) ||
-      entry.keywords.some(k => k.toLowerCase().includes(query))
-    );
+  function openSearch() {
+    searchWrapper.classList.add('open');
+    searchButton.setAttribute('aria-expanded', 'true');
+    renderResults(input.value);
+    window.setTimeout(() => input.focus(), 50);
+  }
 
-    if (matches.length === 0) {
-      resultsDiv.innerHTML = `<p style="color:var(--text-muted); padding:0.5rem;">No results found.</p>`;
+  function closeSearch() {
+    searchWrapper.classList.remove('open');
+    searchButton.setAttribute('aria-expanded', 'false');
+  }
+
+  searchButton.addEventListener('click', () => {
+    if (searchWrapper.classList.contains('open')) {
+      closeSearch();
     } else {
-      matches.forEach(m => {
-        const a = document.createElement('a');
-        a.href = m.url;
-        a.className = 'glass-card';
-        a.style.padding = '0.75rem';
-        a.style.textDecoration = 'none';
-        a.style.color = 'var(--text-primary)';
-        a.innerHTML = `<strong style="display:block;margin-bottom:0.25rem;">${m.title}</strong><span style="font-size:0.85rem;color:var(--text-secondary);">${m.excerpt}</span>`;
-        resultsDiv.appendChild(a);
-      });
+      openSearch();
     }
   });
-});
+
+  closeButton.addEventListener('click', closeSearch);
+  input.addEventListener('input', () => renderResults(input.value));
+
+  document.addEventListener('click', event => {
+    if (searchWrapper.classList.contains('open') && !searchWrapper.contains(event.target as Node)) {
+      closeSearch();
+    }
+  });
+
+  results.addEventListener('click', event => {
+    const resultLink = (event.target as HTMLElement).closest('.site-search-result');
+    if (resultLink) {
+      closeSearch();
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      if (searchWrapper.classList.contains('open')) {
+        closeSearch();
+      } else {
+        openSearch();
+      }
+    }
+
+    if (event.key === 'Escape' && searchWrapper.classList.contains('open')) {
+      closeSearch();
+    }
+  });
+
+  renderResults();
+}
+
+function getSearchEntries() {
+  return staticIndex.map(entry => {
+    const section = entry.url === '/'
+      ? 'Home'
+      : entry.url.replace(/\//g, ' ').replace(/^\s+|\s+$/g, '').replace(/-/g, ' ');
+
+    return {
+      href: entry.url,
+      title: entry.title,
+      section: section.replace(/\b\w/g, char => char.toUpperCase()),
+      searchText: `${entry.title} ${entry.text} ${section} ${entry.url} ${entry.keywords.join(' ')}`
+        .toLowerCase()
+        .replace(/[^a-z0-9\s./+-]/g, ' ')
+    };
+  });
+}
