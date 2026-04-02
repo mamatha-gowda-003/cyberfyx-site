@@ -31,7 +31,7 @@ htmlcov/
 *.sqlite3
 
 # Environment files
-.env
+backend/.env
 .env.local
 .env.production
 
@@ -64,3 +64,4 @@ dist/
 
 # Claude Code local settings
 .claude/settings.local.json
+.runall.pids
