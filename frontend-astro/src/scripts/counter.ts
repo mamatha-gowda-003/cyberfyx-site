@@ -1,6 +1,8 @@
 const activeAnimations = new WeakMap<HTMLElement, number>();
 let counterObserver: IntersectionObserver | null = null;
 
+const STORAGE_KEY = 'cyberfyx_counters_animated';
+
 export function initCounters() {
   const counters = Array.from(document.querySelectorAll<HTMLElement>('.counter'));
 
@@ -11,7 +13,8 @@ export function initCounters() {
 
   if (!counters.length) return;
 
-  counters.forEach(counter => prepareCounter(counter));
+  const hasAnimatedBefore = sessionStorage.getItem(STORAGE_KEY) === 'true';
+  counters.forEach(counter => prepareCounter(counter, hasAnimatedBefore));
 
   if (!('IntersectionObserver' in window)) {
     counters.forEach(counter => animateWhenNeeded(counter));
@@ -37,10 +40,17 @@ export function initCounters() {
   counters.forEach(counter => counterObserver?.observe(counter));
 }
 
-function prepareCounter(counter: HTMLElement) {
+function prepareCounter(counter: HTMLElement, hasAnimatedBefore: boolean) {
   const target = parseInt(counter.getAttribute('data-target') || '0', 10);
   const renderedValue = parseInt(counter.textContent || '0', 10);
   const isAlreadyComplete = counter.getAttribute('data-animated') === 'true' && renderedValue === target;
+
+  // If counters were already animated before, restore the target value and mark as animated
+  if (hasAnimatedBefore) {
+    counter.textContent = target.toString();
+    counter.setAttribute('data-animated', 'true');
+    return;
+  }
 
   if (isAlreadyComplete) {
     counter.textContent = target.toString();
@@ -90,6 +100,9 @@ function animateCounter(element: HTMLElement, target: number) {
 
     element.textContent = target.toString();
     activeAnimations.delete(element);
+    
+    // Mark counters as animated in session storage so they don't animate again
+    sessionStorage.setItem(STORAGE_KEY, 'true');
   };
 
   const frameId = window.requestAnimationFrame(animate);
