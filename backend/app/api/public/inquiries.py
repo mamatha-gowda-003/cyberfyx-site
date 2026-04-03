@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Request, status, Depends
 from pydantic import ValidationError
 
 from app.api.dependencies import DBSession
@@ -50,8 +50,7 @@ async def _parse_inquiry_payload(request: Request) -> InquiryCreate:
 
 
 @router.post("", response_model=InquiryCreateResponse, status_code=status.HTTP_201_CREATED)
-async def submit_inquiry(request: Request, session: DBSession) -> InquiryCreateResponse:
-    payload = await _parse_inquiry_payload(request)
+async def submit_inquiry( request: Request, session: DBSession, payload: InquiryCreate = Depends(_parse_inquiry_payload) ) -> InquiryCreateResponse:
     inquiry = create_inquiry(
         session,
         payload=payload,

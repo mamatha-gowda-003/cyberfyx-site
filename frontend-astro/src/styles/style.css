@@ -3,12 +3,12 @@
 
 /* Default Theme (Light Mode - Professional Cybersecurity Colors) */
 :root {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
+  --bg-primary: #faf6ef;
+  --bg-secondary: #fffdf8;
   --bg-glass: rgba(53, 29, 117, 0.04);
-  --bg-glass-alt: rgba(231, 135, 49, 0.03);
-  --bg-glass-accent: rgba(10, 31, 61, 0.03);
-  --border-glass: rgba(0, 0, 0, 0.08);
+  --bg-glass-alt: rgba(231, 135, 49, 0.07);
+  --bg-glass-accent: rgba(10, 31, 61, 0.06);
+  --border-glass: rgba(0, 0, 0, 0.07);
 
   --logo-text-primary: #351D75;
   --logo-text-secondary: #5A4A93;
@@ -22,7 +22,7 @@
 
   --accent-tertiary: #FF6B35;
   --accent-mid-purple: #E78731;
-  --accent-light-purple: #E8F4FF;
+  --accent-light-purple: #ece8df;
 
   --accent-gradient: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
 
@@ -237,14 +237,6 @@ section {
 }
 
 /* Alternate glass card styling */
-.glass-card:nth-child(2n) {
-  background: var(--bg-glass-alt);
-}
-
-.glass-card:nth-child(3n) {
-  background: var(--bg-glass-accent);
-}
-
 /* Header, search, dropdown, and footer shell styles are split into partials
    to keep future branch changes from colliding in one large shared file. */
 
@@ -254,33 +246,33 @@ section {
   display: flex;
   align-items: center;
   position: relative;
-  overflow: hidden;
-}
-
-.hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(53, 29, 117, 0.12) 0%, rgba(10, 31, 61, 0.08) 50%, rgba(231, 135, 49, 0.06) 100%),
-    radial-gradient(circle at 70% 30%, rgba(var(--accent-primary-rgb), 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 30% 70%, rgba(var(--accent-secondary-rgb), 0.09) 0%, transparent 50%);
-  z-index: -1;
+  overflow: visible;
 }
 
 [data-theme="dark"] .hero::before {
-  background: linear-gradient(135deg, rgba(53, 29, 117, 0.22) 0%, rgba(10, 31, 61, 0.15) 50%, rgba(231, 135, 49, 0.15) 100%),
-    radial-gradient(circle at 70% 30%, rgba(var(--accent-primary-rgb), 0.18) 0%, transparent 50%),
-    radial-gradient(circle at 30% 70%, rgba(var(--accent-secondary-rgb), 0.18) 0%, transparent 50%);
+  content: '';
+  position: absolute;
+  top: -80px;
+  left: 0;
+  right: 0;
+  height: calc(100vh + 80px);
+  background: linear-gradient(135deg, rgba(53, 29, 117, 0.18) 0%, rgba(10, 31, 61, 0.12) 50%, rgba(231, 135, 49, 0.14) 100%),
+    radial-gradient(circle at 70% 30%, rgba(var(--accent-primary-rgb), 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(var(--accent-secondary-rgb), 0.12) 0%, transparent 50%);
+  mix-blend-mode: multiply;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .hero-content {
   max-width: 800px;
   position: relative;
   z-index: 2;
-  padding: 2rem 0;
+  padding: 0 0 2rem 0;
+}
+
+.contact-split {
+  align-items: end;
 }
 
 .hero-layout {
@@ -366,8 +358,11 @@ section {
 
 .hero-visual {
   position: absolute;
-  inset: 0;
-  min-height: 520px;
+  top: -80px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: calc(100vh + 80px);
   isolation: isolate;
   pointer-events: none;
   z-index: 0;
@@ -377,14 +372,13 @@ section {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 520px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   overflow: hidden;
 }
 
-.hero-visual-shell::before {
+[data-theme="dark"] .hero-visual-shell::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -392,15 +386,6 @@ section {
     radial-gradient(circle at 12% 42%, rgba(53, 29, 117, 0.1) 0%, rgba(53, 29, 117, 0.04) 18%, rgba(53, 29, 117, 0.012) 28%, rgba(53, 29, 117, 0) 42%),
     radial-gradient(circle at 26% 72%, rgba(231, 135, 49, 0.07) 0%, rgba(231, 135, 49, 0.026) 16%, rgba(231, 135, 49, 0.008) 25%, rgba(231, 135, 49, 0) 36%),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.014) 42%, rgba(255, 255, 255, 0) 68%);
-  pointer-events: none;
-}
-
-.hero-visual-shell::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(248, 250, 252, 0) 0%, rgba(248, 250, 252, 0.008) 16%, rgba(248, 250, 252, 0.04) 34%, rgba(248, 250, 252, 0.1) 58%, rgba(248, 250, 252, 0.16) 100%);
   pointer-events: none;
 }
 
@@ -1150,14 +1135,14 @@ section {
 
 .industry-card i {
   font-size: 3rem;
-  color: var(--accent-primary);
+  color: var(--logo-text-primary);
   margin-bottom: 1.5rem;
   transition: transform 0.3s ease;
 }
 
 .industry-card:hover i {
   transform: scale(1.1) translateY(-10px);
-  color: var(--accent-secondary);
+  color: var(--logo-text-secondary);
 }
 
 .industries-cta-card {
@@ -1224,6 +1209,10 @@ textarea.form-control {
   border: 1px solid var(--border-glass);
   border-radius: 1rem;
   transition: all var(--transition-normal);
+}
+
+.contact-info-item:last-child {
+  margin-bottom: 0;
 }
 
 .contact-info-item:hover {
@@ -1328,22 +1317,15 @@ textarea.form-control {
     gap: 2rem;
   }
 
+  /* Hide the decorative canvas visual on portrait/narrow screens — it
+     stacks below the hero text and creates a large blank space. */
   .hero-visual {
-    position: relative;
-    inset: auto;
-    min-height: 360px;
-    order: 2;
+    display: none;
   }
 
-  .hero-visual-shell {
-    min-height: 360px;
-    justify-content: center;
-  }
-
-  .hero-grid-frame {
-    position: relative;
-    right: auto;
-    width: min(100%, 430px);
+  .hero-grid-canvas,
+  .page-hero-grid-canvas {
+    display: none;
   }
 
   .grid-3,
@@ -1740,16 +1722,103 @@ textarea.form-control {
   border-bottom: 1px solid var(--border-glass);
   background: var(--bg-primary);
   position: relative;
+  overflow: visible;
 }
 
 .page-hero::before {
   content: '';
   position: absolute;
-  inset: 0;
+  top: -80px;
+  left: 0;
+  right: 0;
+  height: calc(100% + 80px);
   background:
     radial-gradient(circle at 20% 80%, rgba(53, 29, 117, 0.04) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(231, 135, 49, 0.04) 0%, transparent 50%);
+  mix-blend-mode: soft-light;
   pointer-events: none;
+}
+
+.page-hero-visual {
+  position: absolute;
+  top: -80px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: calc(100% + 80px);
+  isolation: isolate;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.page-hero-visual-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.page-hero-visual-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 42%, rgba(53, 29, 117, 0.05) 0%, rgba(53, 29, 117, 0.02) 18%, rgba(53, 29, 117, 0.005) 28%, rgba(53, 29, 117, 0) 42%),
+    radial-gradient(circle at 26% 72%, rgba(231, 135, 49, 0.04) 0%, rgba(231, 135, 49, 0.015) 16%, rgba(231, 135, 49, 0.004) 25%, rgba(231, 135, 49, 0) 36%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.01) 0%, rgba(255, 255, 255, 0.005) 42%, rgba(255, 255, 255, 0) 68%);
+  pointer-events: none;
+}
+
+.page-hero-visual-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(248, 250, 252, 0) 0%, rgba(248, 250, 252, 0.008) 16%, rgba(248, 250, 252, 0.04) 34%, rgba(248, 250, 252, 0.1) 58%, rgba(248, 250, 252, 0.16) 100%);
+  pointer-events: none;
+}
+
+.page-hero-visual-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(36px);
+  pointer-events: none;
+}
+
+.page-hero-visual-glow-a {
+  width: 260px;
+  height: 260px;
+  top: 10%;
+  right: 10%;
+  background: radial-gradient(circle, rgba(231, 135, 49, 0.06) 0%, rgba(231, 135, 49, 0) 72%);
+}
+
+.page-hero-visual-glow-b {
+  width: 320px;
+  height: 320px;
+  bottom: 4%;
+  right: 20%;
+  background: radial-gradient(circle, rgba(53, 29, 117, 0.07) 0%, rgba(53, 29, 117, 0) 72%);
+}
+
+.page-hero-grid-frame {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: min(80%, 600px);
+  height: 100%;
+  aspect-ratio: auto;
+  z-index: 1;
+  display: block;
+}
+
+.page-hero-grid-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .page-hero-layout {
@@ -1758,7 +1827,7 @@ textarea.form-control {
   gap: 3rem;
   align-items: start;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .page-hero-content h1 {

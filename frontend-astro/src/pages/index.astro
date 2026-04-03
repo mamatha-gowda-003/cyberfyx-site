@@ -13,6 +13,14 @@ const endpointLogoRows = [
   { logos: endpointClientLogos.slice(0, 9), reverse: true, speedSeconds: 38 },
   { logos: endpointClientLogos.slice(9, 18), reverse: false, speedSeconds: 42 },
 ];
+import ContactForm from '../components/contact/ContactForm.astro';
+import { fetchContactProfile } from '../lib/api';
+import { CONTACT_PROFILE_FALLBACK } from '../lib/fallbacks';
+
+void GlassCard;
+
+const profile = (await fetchContactProfile()) ?? CONTACT_PROFILE_FALLBACK;
+const telHref = `tel:${profile.primary_phone.replace(/[^+\d]/g, '')}`;
 ---
 
 <BaseLayout title="Cyberfyx | Next-Generation Cybersecurity & IT Solutions">
@@ -206,20 +214,20 @@ const endpointLogoRows = [
   <!-- Contact Section -->
   <section id="contact" style="background: linear-gradient(135deg, rgba(248, 250, 252, 0) 0%, rgba(53, 29, 117, 0.05) 50%, rgba(248, 250, 252, 0) 100%);">
     <div class="container">
-      <div class="grid grid-2" style="gap: 4rem;">
+      <div class="grid grid-2 contact-split" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
         <div class="fade-up">
-          <h2 style="margin-bottom: 2rem;">Get in <span class="text-gradient">Touch</span></h2>
-          <p style="margin-bottom: 3rem; font-size: 1.1rem;">Whether you need an immediate cybersecurity assessment, managed endpoint services, or ISO consultation, our team is ready to assist you.</p>
+          <h2 class="mb-2">Get in <span class="text-gradient">Touch</span></h2>
+          <p class="lede mb-3">Whether you need an immediate cybersecurity assessment, managed endpoint services, or ISO consultation, our team is ready to assist you.</p>
 
-          <div class="contact-info-item">
-            <div class="contact-info-icon" onclick="window.open('https://www.google.com/maps/search/?api=1&query=Janardhana%20Towers,%20Ashok%20Nagar,%20Bengaluru%20560025', '_blank')" style="cursor: pointer;">
+          <a href={profile.map_url} target="_blank" rel="noopener noreferrer" class="contact-info-item" style="text-decoration: none;">
+            <div class="contact-info-icon">
               <i class="fa-solid fa-map-location-dot"></i>
             </div>
             <div class="contact-info-content">
               <h4>Office Location</h4>
-              <p>Janardhana Towers, Ashok Nagar<br>Bengaluru 560025</p>
+              <p>{profile.headquarters_address}</p>
             </div>
-          </div>
+          </a>
 
           <div class="contact-info-item">
             <div class="contact-info-icon">
@@ -227,7 +235,7 @@ const endpointLogoRows = [
             </div>
             <div class="contact-info-content">
               <h4>Phone Number</h4>
-              <p><a href="tel:+919663410308">+91 9663410308</a></p>
+              <p><a href={telHref}>{profile.primary_phone}</a></p>
             </div>
           </div>
 
@@ -237,40 +245,12 @@ const endpointLogoRows = [
             </div>
             <div class="contact-info-content">
               <h4>Email Address</h4>
-              <p><a href="mailto:sales@cyberfyx.net">sales@cyberfyx.net</a></p>
+              <p><a href={`mailto:${profile.sales_email}`}>{profile.sales_email}</a></p>
             </div>
           </div>
         </div>
 
-        <div class="glass-card fade-up delay-100">
-          <h3 style="margin-bottom: 1.5rem;">Send Us a Message</h3>
-          <form id="contact-form" data-inquiry-form="public">
-            <div class="form-group">
-              <label for="name" class="form-label">Full Name</label>
-              <input type="text" id="name" name="name" class="form-control" placeholder="John Doe" required>
-            </div>
-            <div class="form-group">
-              <label for="email" class="form-label">Email Address</label>
-              <input type="email" id="email" name="email" class="form-control" placeholder="john@example.com" required>
-            </div>
-            <div class="form-group">
-              <label for="subject" class="form-label">Service Interested In</label>
-              <select id="subject" name="subject" class="form-control" style="appearance: none;" required>
-                <option value="" disabled selected>Select a Service</option>
-                <option value="cybersecurity">Cybersecurity</option>
-                <option value="endpoint">Endpoint Management</option>
-                <option value="itsecurity">IT Security</option>
-                <option value="iso">ISO Consultation</option>
-                <option value="other">Other Inquiry</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="message" class="form-label">Message</label>
-              <textarea id="message" name="message" class="form-control" placeholder="How can we help you?" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Inquiry</button>
-          </form>
-        </div>
+        <ContactForm interestOptions={profile.interest_options} />
       </div>
     </div>
   </section>
