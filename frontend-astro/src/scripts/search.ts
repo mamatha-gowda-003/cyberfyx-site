@@ -160,6 +160,7 @@ function initSiteSearch() {
     const chip = target.closest('[data-search-chip]') as HTMLElement | null;
     if (chip) {
       event.preventDefault();
+      event.stopPropagation();
       runChipSearch(chip.dataset.searchChip ?? '');
       return;
     }

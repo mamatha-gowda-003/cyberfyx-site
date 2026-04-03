@@ -3,6 +3,19 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { CYBERSECURITY_FALLBACK } from '../../lib/fallbacks';
 
 const track = CYBERSECURITY_FALLBACK;
+
+const iconMap: Record<string, string> = {
+  'vapt': 'fa-solid fa-laptop-medical',
+  'grc-maintenance': 'fa-solid fa-tools',
+  'pci-dss': 'fa-regular fa-credit-card',
+  'vciso-dpo': 'fa-solid fa-display',
+  'gdpr-ccpa-dpdpa': 'fa-solid fa-user-secret',
+  'red-team': 'fa-solid fa-users',
+  'soc': 'fa-solid fa-users-gear',
+  'hipaa': 'fa-solid fa-folder-open',
+  'soc2-type2': 'fa-solid fa-money-bill-transfer',
+  'cmmi': 'fa-solid fa-gauge',
+};
 ---
 
 <BaseLayout title={`${track.title} Services | Cyberfyx`}>
@@ -29,6 +42,7 @@ const track = CYBERSECURITY_FALLBACK;
       <div class="grid grid-3" style="gap: 2rem;">
         {track.offerings.map((offering) => (
           <div class="glass-card fade-up service-card-minimal" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 220px; padding: 2.25rem 1.75rem;">
+            <div class="service-icon" style="margin: 0 auto 1.5rem auto; font-size: 2rem;"><i class={iconMap[offering.slug] || 'fa-solid fa-shield-halved'}></i></div>
             <h3 style="margin-bottom: 0.5rem; font-size: 1.18rem;">{offering.title}</h3>
             <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem;">{offering.kicker}</p>
           </div>
