@@ -16,6 +16,14 @@ function initNav() {
   function syncMenuIcon(isOpen: boolean) {
     const icon = mobileMenuBtn?.querySelector('i');
     if (!icon) return;
+
+    if (!mobileBreakpoint.matches) {
+      icon.classList.add('fa-bars');
+      icon.classList.remove('fa-xmark');
+      mobileMenuBtn?.setAttribute('aria-expanded', 'false');
+      return;
+    }
+
     icon.classList.toggle('fa-bars', !isOpen);
     icon.classList.toggle('fa-xmark', isOpen);
     mobileMenuBtn?.setAttribute('aria-expanded', String(isOpen));
