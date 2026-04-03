@@ -27,7 +27,7 @@ function commandExists(command, args = ['--version']) {
 
 function resolveSystemPython() {
   const candidates = process.platform === 'win32'
-    ? ['python', 'py']
+    ? ['py', 'python']
     : ['python3', 'python'];
 
   for (const candidate of candidates) {
@@ -47,6 +47,86 @@ function resolveBackendPython() {
   return process.platform === 'win32'
     ? join(backendDir, '.venv', 'Scripts', 'python.exe')
     : join(backendDir, '.venv', 'bin', 'python');
+}
+
+function backendHasPip(backendPython) {
+  return existsSync(backendPython) && commandExists(backendPython, ['-m', 'pip', '--version']);
+}
+
+async function tryRun(command, args, options = {}) {
+  try {
+    await run(command, args, options);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function ensureBackendVirtualEnv(python, backendPython) {
+  if (!existsSync(backendPython)) {
+    log('[backend] Creating virtual environment...');
+    await run(python.command, [...python.baseArgs, '-m', 'venv', '.venv'], { cwd: backendDir });
+  }
+
+  if (backendHasPip(backendPython)) {
+    return;
+  }
+
+  log('[backend] Virtual environment is missing pip. Repairing...');
+
+  try {
+    await run(backendPython, ['-m', 'ensurepip', '--upgrade'], { cwd: backendDir });
+  } catch {
+    // Fall back to recreating the environment below.
+  }
+
+  if (backendHasPip(backendPython)) {
+    return;
+  }
+
+  log('[backend] Recreating virtual environment with pip...');
+  await run(python.command, [...python.baseArgs, '-m', 'venv', '--clear', '.venv'], { cwd: backendDir });
+
+  if (!backendHasPip(backendPython)) {
+    try {
+      await run(backendPython, ['-m', 'ensurepip', '--upgrade'], { cwd: backendDir });
+    } catch {
+      // Let the explicit error below explain the next step.
+    }
+  }
+
+  if (!backendHasPip(backendPython)) {
+    throw new Error(
+      'The backend virtual environment was created without pip. Repair the Python installation used by npm start and retry. In PowerShell, the manual activation command is .\\backend\\.venv\\Scripts\\Activate.ps1.',
+    );
+  }
+}
+
+async function installBackendDependencies(backendPython) {
+  log('[backend] Upgrading packaging tools...');
+  const upgradedPackaging = await tryRun(
+    backendPython,
+    ['-m', 'pip', 'install', '--upgrade', 'pip', 'setuptools', 'wheel'],
+    { cwd: backendDir },
+  );
+
+  if (!upgradedPackaging) {
+    log('[backend] Packaging tool upgrade failed. Continuing with the existing pip environment.');
+  }
+
+  log('[backend] Installing Python dependencies...');
+  const editableInstalled = await tryRun(
+    backendPython,
+    ['-m', 'pip', 'install', '-e', '.[dev]'],
+    { cwd: backendDir },
+  );
+
+  if (editableInstalled) {
+    return;
+  }
+
+  log('[backend] Editable install failed. Falling back to a standard install...');
+  await run(backendPython, ['-m', 'pip', 'install', '.[dev]'], { cwd: backendDir });
 }
 
 function ensureFileFromExample(targetPath, examplePath) {
@@ -251,23 +331,30 @@ async function main() {
   const python = resolveSystemPython();
   const backendPython = resolveBackendPython();
   const backendBaseUrl = `http://127.0.0.1:${backendPort}`;
+  const backendRuntimeEnv = {
+    ...process.env,
+    CYBERFYX_ENVIRONMENT: process.env.CYBERFYX_ENVIRONMENT ?? 'development',
+    CYBERFYX_DATABASE_URL: process.env.CYBERFYX_DATABASE_URL ?? 'sqlite:///./cyberfyx.db',
+  };
 
-  if (!existsSync(backendPython)) {
-    log('[backend] Creating virtual environment...');
-    await run(python.command, [...python.baseArgs, '-m', 'venv', '.venv'], { cwd: backendDir });
-  }
+  await ensureBackendVirtualEnv(python, backendPython);
 
   ensureFileFromExample(join(backendDir, '.env'), join(backendDir, '.env.example'));
   ensureFileFromExample(join(frontendDir, '.env'), join(frontendDir, '.env.example'));
 
-  log('[backend] Installing Python dependencies...');
-  await run(backendPython, ['-m', 'pip', 'install', '-e', '.[dev]'], { cwd: backendDir });
+  await installBackendDependencies(backendPython);
 
   log('[backend] Running migrations...');
-  await run(backendPython, ['-m', 'alembic', '-c', 'alembic/alembic.ini', 'upgrade', 'head'], { cwd: backendDir });
+  await run(backendPython, ['-m', 'alembic', '-c', 'alembic/alembic.ini', 'upgrade', 'head'], {
+    cwd: backendDir,
+    env: backendRuntimeEnv,
+  });
 
   log('[backend] Seeding database...');
-  await run(backendPython, ['-m', 'app.db.seed'], { cwd: backendDir });
+  await run(backendPython, ['-m', 'app.db.seed'], {
+    cwd: backendDir,
+    env: backendRuntimeEnv,
+  });
 
   log('[frontend] Installing npm dependencies...');
   await run(npmCommand, ['install', '--no-fund', '--no-audit'], { cwd: frontendDir });
@@ -278,7 +365,7 @@ async function main() {
     ['-m', 'uvicorn', 'app.main:app', '--reload', '--host', '127.0.0.1', '--port', String(backendPort)],
     {
       cwd: backendDir,
-      env: process.env,
+      env: backendRuntimeEnv,
       stdio: 'inherit',
       shell: false,
     },
