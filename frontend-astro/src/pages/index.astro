@@ -208,6 +208,33 @@ const telHref = `tel:${profile.primary_phone.replace(/[^+\d]/g, '')}`;
     </div>
   </section>
 
+  <!-- Client Logo Cloud -->
+  <section class="logo-cloud-section">
+    <div class="container">
+      <div class="logo-cloud-panel fade-up">
+        <div class="logo-cloud-intro">
+          <h2>Our Clients</h2>
+        </div>
+
+        <div class="logo-cloud-layout">
+          <div class="logo-category fade-up" aria-label="Cybersecurity clients">
+            <p class="logo-category-label">Cybersecurity clients</p>
+            <LogoRow logos={cybersecurityClientLogos} speedSeconds={36} />
+          </div>
+
+          <div class="logo-category fade-up delay-100" aria-label="Endpoint clients">
+            <p class="logo-category-label">Endpoint clients</p>
+            <div class="logo-row-stack">
+              {endpointLogoRows.map((row) => (
+                <LogoRow logos={row.logos} reverse={row.reverse} speedSeconds={row.speedSeconds} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Contact Section -->
   <section id="contact" style="background: linear-gradient(135deg, rgba(248, 250, 252, 0) 0%, rgba(53, 29, 117, 0.05) 50%, rgba(248, 250, 252, 0) 100%);">
     <div class="container">
@@ -248,33 +275,6 @@ const telHref = `tel:${profile.primary_phone.replace(/[^+\d]/g, '')}`;
         </div>
 
         <ContactForm interestOptions={profile.interest_options} />
-      </div>
-    </div>
-  </section>
-
-  <!-- Client Logo Cloud -->
-  <section class="logo-cloud-section">
-    <div class="container">
-      <div class="logo-cloud-panel fade-up">
-        <div class="logo-cloud-intro">
-          <h2>Our Clients</h2>
-        </div>
-
-        <div class="logo-cloud-layout">
-          <div class="logo-category fade-up" aria-label="Cybersecurity clients">
-            <p class="logo-category-label">Cybersecurity clients</p>
-            <LogoRow logos={cybersecurityClientLogos} speedSeconds={36} />
-          </div>
-
-          <div class="logo-category fade-up delay-100" aria-label="Endpoint clients">
-            <p class="logo-category-label">Endpoint clients</p>
-            <div class="logo-row-stack">
-              {endpointLogoRows.map((row) => (
-                <LogoRow logos={row.logos} reverse={row.reverse} speedSeconds={row.speedSeconds} />
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>

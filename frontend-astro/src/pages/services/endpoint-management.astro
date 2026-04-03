@@ -28,26 +28,30 @@ const rows = ENDPOINT_FALLBACK.endpoint_rows;
       </div>
 
       {rows.length > 0 ? (
-        <div class="glass-card fade-up delay-100" style="padding: 0; overflow: hidden;">
-          <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; background: var(--bg-primary);">
-              <thead>
-                <tr style="background: var(--logo-text-primary); color: white;">
-                  <th style="padding: 1.5rem; font-size: 1.2rem; font-weight: 500;">Products</th>
-                  <th style="padding: 1.5rem; font-size: 1.2rem; font-weight: 500;">Solutions</th>
-                  <th style="padding: 1.5rem; font-size: 1.2rem; font-weight: 500;">Services</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row, idx) => (
-                  <tr style={`border-bottom: 1px solid rgba(128, 128, 128, 0.1); ${idx % 2 === 1 ? 'background: rgba(128, 128, 128, 0.02);' : ''}`}>
-                    <td style="padding: 1.5rem; color: var(--text-secondary);">{row.product_name}</td>
-                    <td style="padding: 1.5rem; color: var(--text-secondary);">{row.solution_name}</td>
-                    <td style="padding: 1.5rem; color: var(--text-secondary);">{row.service_name}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div class="grid grid-3" style="gap: 2rem;">
+          <div class="glass-card fade-up">
+            <h3 style="margin-bottom: 1.5rem; text-align: center; color: var(--logo-text-primary);">Products</h3>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              {rows.map(row => row.product_name).filter(Boolean).map(item => (
+                <li style="padding: 1rem; border-bottom: 1px solid rgba(128, 128, 128, 0.1); color: var(--text-secondary);">{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div class="glass-card fade-up delay-100">
+            <h3 style="margin-bottom: 1.5rem; text-align: center; color: var(--logo-text-primary);">Solutions</h3>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              {rows.map(row => row.solution_name).filter(Boolean).map(item => (
+                <li style="padding: 1rem; border-bottom: 1px solid rgba(128, 128, 128, 0.1); color: var(--text-secondary);">{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div class="glass-card fade-up delay-200">
+            <h3 style="margin-bottom: 1.5rem; text-align: center; color: var(--logo-text-primary);">Services</h3>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              {rows.map(row => row.service_name).filter(Boolean).map(item => (
+                <li style="padding: 1rem; border-bottom: 1px solid rgba(128, 128, 128, 0.1); color: var(--text-secondary);">{item}</li>
+              ))}
+            </ul>
           </div>
         </div>
       ) : (
