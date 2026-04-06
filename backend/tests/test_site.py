@@ -48,7 +48,7 @@ def test_frontend_root_and_contact_page_are_served(client):
     for path in script_paths:
         collect_script(path)
 
-    assert any("/api/v1/public/inquiries" in body for body in script_bodies)
+    assert any("docs.google.com/forms" in body for body in script_bodies)
 
 
 def test_contact_profile_includes_office_regions_and_active_interests(client, seeded_db):
