@@ -425,7 +425,7 @@ export const CONTACT_PROFILE_FALLBACK: ContactProfile = {
   profile_key: 'primary',
   sales_email: 'sales@cyberfyx.net',
   hr_email: 'hr@cyberfyx.net',
-  primary_phone: '+91 9663410308',
+  primary_phone: '+91 99726 27214',
   headquarters_name: 'Cyberfyx',
   headquarters_address: 'Janardhana Towers, Ashok Nagar, Bengaluru 560025',
   map_url: 'https://www.google.com/maps/search/?api=1&query=Janardhana%20Towers%2C%20Ashok%20Nagar%2C%20Bengaluru%20560025',
